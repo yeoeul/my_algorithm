@@ -1,0 +1,10 @@
+void my_hash()
+{
+    for(i = 0; i < size; i++){
+        if(max < array[i]) max = array[i];
+    }
+    int *count = new int[max + 1]();
+    for(i = 0; i < size; i++){
+        count[array[i]]++;
+    }
+}
