@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-typedef NodeDataType int;
+typedef int NodeDataType;
 
 typedef struct tagNode
 {
@@ -19,32 +19,37 @@ Node *CreateNode(int NewData)
     return NewNode;
 }
 
-Node *InsertNode(Node *CrtNode, Node *NewNode)
+void DestroyNode(Node *Node)
 {
-    NewNode->NextNode = CrtNode->NextNode;
-    NewNode->PrevNode = CrtNode;
-    CrtNode->NextNode = NewNode;
+    free(Node);
 }
 
-void ascending_sort(int *array, int *sorted_array, int n)
+Node *InsertNode(Node *CrtNode, Node *InsertNode)
 {
-    Node *Head = *Node = CreateNode(arrayr[0]);
+    InsertNode->PrevNode = CrtNode;
+    InsertNode->NextNode = CrtNode->NextNode;
+    CrtNode->NextNode = InsertNode;
+}
+
+void AscendingSort(int *array, int *sorted_array, int n)
+{
+    Node *Node = CreateNode(array[0]);
+    Node *Head = Node;
 
     for(i = 1; i < n; i++){
-        Node *Node = Head;
-        while(Node->Data < array[i]){
-            Node = Node->NextNode;
+        Node *NewNode = CreateNode(array[i]);
+        if(array[i] < Node->Data){
+            Node = Head;
         }
-        while(Node->Data < array[i]){
-            Node = Node->PrevNode;
+        while(Node->NextNode != NULL){
+            if(Node->Data < array[i]) Node = Node->NextNode;
         }
-        InsertNode(Node, CreateNode(array[i]));
-        if(Head->PrevNode != NULL) Head = Head->PrevNode;
+        InsertNode(Node, NewNode);
+        if(Head->PrevNode != NULL) Head = Node;
     }
-
 }
 
-void descending_sort()
+void DescendingSort()
 {
 
 }
