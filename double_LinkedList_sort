@@ -6,7 +6,6 @@ typedef int NodeDataType;
 typedef struct tagNode
 {
     NodeDataType Data;
-    struct tagNode *PrevNode;
     struct tagNode *NextNode;
 }Node;
 
@@ -28,7 +27,6 @@ Node *SetHeadNode(Node *NewHead, Node *OldHead){
 }
 
 Node *InsertNode(Node *CrtNode, Node *InsertNode){
-    InsertNode->PrevNode = CrtNode;
     InsertNode->NextNode = CrtNode->NextNode;
     CrtNode->NextNode = InsertNode;
 }
@@ -41,24 +39,19 @@ void AscendingSort(int *array, int *sorted_array, int n)
     
     for(i = 1; i < n; i++){
         Node *NewNode = CreateNode(array[i]);
-        
         if(array[i] < p_Node->Data){
             p_Node = Head;
-            if(array[i] > p_Node->Data){
-                SetHeadNode(NewNode, Head);
-                Head = NewNode;
+            if(array[i] < p_Node->Data){
+                Head = SetHeadNode(NewNode, Head);
                 continue;
             }
         }
-        
-        while(p_Node->Data < array[i] && array[i] <= p_Node->NextNode->Data){
+        while(p_Node->Data < array[i]){
             if(p_Node->NextNode == NULL) break; 
-            if(p_Node->NextNode->Data > array[i]) break;
+            else if(p_Node->NextNode->Data > array[i]) break;
             p_Node = p_Node->NextNode;
         }
         InsertNode(p_Node, NewNode);
-        
-        printf("%d\n",Head->Data);
     }
     
     p_Node = Head;
@@ -71,7 +64,7 @@ void AscendingSort(int *array, int *sorted_array, int n)
 int main()
 {
     int i, n;
-    
+    int start, end;
     scanf("%d",&n);
     
     int *array = (int *)malloc(sizeof(int) * n);
@@ -80,13 +73,12 @@ int main()
     srand((unsigned int)time(NULL));
 
     for(i = 0; i < n; i++){
-        array[i] = rand() % n + 1;
+        array[i] = rand();
     }
-    AscendingSort(array, sorted_array, n);
     
-    for(i = 0; i < n; i++) printf("%d ",array[i]);
-    printf("\n");
-    for(i = 0; i < n; i++) printf("%d ",sorted_array[i]);
+    AscendingSort(array, sorted_array, n);
+
+    for(i = 0; i < n; i++) printf("%d ",sorted_array + i);
 
     return 0;
 }
