@@ -1,31 +1,33 @@
 #include <stdio.h>
+#include <malloc.h>
 
 typedef int NodeDataType;
 
 typedef struct tagNode
 {
     NodeDataType Data;
-    Node *PrevNode;
-    Node *NextNode;
+    struct tagNode *PrevNode;
+    struct tagNode *NextNode;
 }Node;
 
 Node *CreateNode(int NewData)
 {
-    Node NewNode = (Node *)malloc(sizeof(Node));
+    Node *NewNode = (Node *)malloc(sizeof(Node));
     NewNode->Data = NewData;
-    NewNode->PrevNode = NULL;
     NewNode->NextNode = NULL;
-
     return NewNode;
 }
 
-void DestroyNode(Node *Node)
-{
+void DestroyNode(Node *Node){
     free(Node);
 }
 
-Node *InsertNode(Node *CrtNode, Node *InsertNode)
-{
+Node *SetHeadNode(Node *NewHead, Node *OldHead){
+    if(OldHead != NULL) NewHead->NextNode = OldHead;
+    return NewHead;
+}
+
+Node *InsertNode(Node *CrtNode, Node *InsertNode){
     InsertNode->PrevNode = CrtNode;
     InsertNode->NextNode = CrtNode->NextNode;
     CrtNode->NextNode = InsertNode;
@@ -33,37 +35,58 @@ Node *InsertNode(Node *CrtNode, Node *InsertNode)
 
 void AscendingSort(int *array, int *sorted_array, int n)
 {
-    Node *Node = CreateNode(array[0]);
-    Node *Head = Node;
-
+    Node *p_Node = CreateNode(array[0]);
+    Node *Head = p_Node;
+    int i;
+    
     for(i = 1; i < n; i++){
         Node *NewNode = CreateNode(array[i]);
-        if(array[i] < Node->Data){
-            Node = Head;
+        
+        if(array[i] < p_Node->Data){
+            p_Node = Head;
+            if(array[i] > p_Node->Data){
+                SetHeadNode(NewNode, Head);
+                Head = NewNode;
+                continue;
+            }
         }
-        while(Node->NextNode != NULL){
-            if(Node->Data < array[i]) Node = Node->NextNode;
+        
+        while(p_Node->Data < array[i] && array[i] <= p_Node->NextNode->Data){
+            if(p_Node->NextNode == NULL) break; 
+            if(p_Node->NextNode->Data > array[i]) break;
+            p_Node = p_Node->NextNode;
         }
-        InsertNode(Node, NewNode);
-        if(Head->PrevNode != NULL) Head = Node;
+        InsertNode(p_Node, NewNode);
+        
+        printf("%d\n",Head->Data);
     }
-}
-
-void DescendingSort()
-{
-
+    
+    p_Node = Head;
+    for(i = 0; i < n; i++){
+        sorted_array[i] = p_Node->Data;
+        p_Node = p_Node->NextNode;
+    }
 }
 
 int main()
 {
-    int n;
+    int i, n;
+    
     scanf("%d",&n);
-
+    
     int *array = (int *)malloc(sizeof(int) * n);
-    for(i = 0; i < n; i++) *(array + i) = n - i;
+    int *sorted_array = (int *)malloc(sizeof(int) * n);
+    
+    srand((unsigned int)time(NULL));
 
-
-
+    for(i = 0; i < n; i++){
+        array[i] = rand() % n + 1;
+    }
+    AscendingSort(array, sorted_array, n);
+    
+    for(i = 0; i < n; i++) printf("%d ",array[i]);
+    printf("\n");
+    for(i = 0; i < n; i++) printf("%d ",sorted_array[i]);
 
     return 0;
 }
